@@ -54,26 +54,8 @@ Join covid_vaccinations_csv vac
 where dea.continent != ''
 order by 2,3
 
--- SUBSET
--- Solving using CTE ( temp result set )
-With DeathvsVac(Continent,Location,Date,Population, NewVaccinations ,RollingPeopleVaccinated)
-as 
-(
-SELECT dea.continent ,dea.location,dea.date,dea.population,cast(vac.new_vaccinations as bigint),
-sum(cast(vac.new_vaccinations as bigint)) over (PARTITION by dea.location order by dea.location,dea.date) as RollingPeopleVaccinated
-from covid_death_csv dea
-join covid_vaccinations_csv vac
-	on dea.location = vac.location 
-	and dea.date = vac.date
-where dea.continent  != ''
---order by 2,3
-)
-select *,(cast(RollingPeopleVaccinated as REAL)/Population)*100
-from DeathvsVac
-
-
---SUBSET ( didn't work )
--- TEMP TABLE SOLUTION
+	
+-- TEMP TABLE 
 
 DROP Table if exists #PercentPopulationVaccinated
 Create Table #PercentPopulationVaccinated
